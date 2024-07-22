@@ -8,8 +8,13 @@ import java.util.Optional;
 
 @Service
 public class MovieService {
+    private final MovieRepository movieRepository;
+
     @Autowired
-    private MovieRepository movieRepository;
+    public MovieService(MovieRepository movieRepository) {
+        this.movieRepository = movieRepository;
+    }
+
     public List<Movie> allMovies() {
         return movieRepository.findAll();
     }
