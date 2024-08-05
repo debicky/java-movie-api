@@ -1,44 +1,42 @@
-import {useEffect, useRef} from 'react';
+import React, { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import api from '../../api/axiosConfig';
-import {useParams} from 'react-router-dom';
-import {Container, Row, Col} from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
+import { Container, Row, Col } from 'react-bootstrap';
 import ReviewForm from '../reviewForm/ReviewForm';
 
-import React from 'react'
-
-const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
+const Reviews = ({ getMovieData, movie, reviews, setReviews }) => {
 
     const revText = useRef();
+    const [errorMessage, setErrorMessage] = useState('');
     let params = useParams();
     const movieId = params.movieId;
 
-    useEffect(()=>{
+    useEffect(() => {
         getMovieData(movieId);
-    },[])
+    }, []);
 
-    const addReview = async (e) =>{
+    const addReview = async (e) => {
         e.preventDefault();
-
         const rev = revText.current;
 
-        try
-        {
-            const response = await api.post("/api/v1/reviews",{reviewBody:rev.value,imdbId:movieId});
+        if (rev.value.length < 3) {
+            setErrorMessage('Review must be at least 3 characters long.');
+            return;
+        }
 
-            const updatedReviews = [...reviews || [], {body:rev.value}];
+        try {
+            const response = await api.post("/api/v1/reviews", { reviewBody: rev.value, imdbId: movieId });
+
+            const updatedReviews = [...reviews || [], { body: rev.value }];
 
             rev.value = "";
+            setErrorMessage('');
 
             setReviews(updatedReviews);
-        }
-        catch(err)
-        {
+        } catch (err) {
             console.error(err);
         }
-
-
-
-
     }
 
     return (
@@ -51,24 +49,23 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
                     <img src={movie?.poster} alt="" />
                 </Col>
                 <Col>
+                    <>
+                        <Row>
+                            <Col>
+                                <ReviewForm handleSubmit={addReview} revText={revText} labelText="Write a Review?" />
+                                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <hr />
+                            </Col>
+                        </Row>
+                    </>
                     {
-                        <>
-                            <Row>
-                                <Col>
-                                    <ReviewForm handleSubmit={addReview} revText={revText} labelText = "Write a Review?" />
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <hr />
-                                </Col>
-                            </Row>
-                        </>
-                    }
-                    {
-                        reviews?.map((r) => {
-                            return(
-                                <>
+                        reviews?.map((r, index) => {
+                            return (
+                                <React.Fragment key={index}>
                                     <Row>
                                         <Col>{r.body}</Col>
                                     </Row>
@@ -77,7 +74,7 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
                                             <hr />
                                         </Col>
                                     </Row>
-                                </>
+                                </React.Fragment>
                             )
                         })
                     }
@@ -92,4 +89,4 @@ const Reviews = ({getMovieData,movie,reviews,setReviews}) => {
     )
 }
 
-export default Reviews
+export default Reviews;
