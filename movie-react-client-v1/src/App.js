@@ -14,23 +14,6 @@ function App() {
   const [movie, setMovie] = useState([]);
   const [reviews, setReviews] = useState([]);
 
-  const getMovieData = async (movieId) => {
-    try {
-      const response = await api.get(`/api/v1/movies/${movieId}`);
-      const singleMovie = response.data;
-
-      setMovie(singleMovie)
-      setReviews(singleMovie.setReviews)
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
-
-  useEffect(() => {
-    getMovies();
-  }, []);
-
   const getMovies = async () => {
     try {
       const response = await api.get("api/v1/movies");
@@ -41,18 +24,35 @@ function App() {
     }
   };
 
+  const getMovieData = async (movieId) => {
+    try {
+      const response = await api.get(`/api/v1/movies/${movieId}`);
+      const singleMovie = response.data;
+
+      setMovie(singleMovie)
+      setReviews(singleMovie.reviewIds)
+    }
+    catch (err) {
+      console.log(err);
+    }
+  }
+
+  useEffect(() => {
+    getMovies();
+  }, []);
+
   return (
-    <div className="App">
-      <Header></Header>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route path={"/"} element={<Home movies={movies} />}></Route>
-          <Route path={"/Trailer/:ytTrailerId"} element={<Trailer />}></Route>
-          <Route path="/Reviews/:movieId" element ={<Reviews getMovieData = {getMovieData} movie={movie} reviews = {reviews} setReviews = {setReviews} />}></Route>
-          <Route path="*" element = {<NotFound/>}></Route>
-        </Route>
-      </Routes>
-    </div>
+      <div className="App">
+        <Header></Header>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route path={"/"} element={<Home movies={movies} />}></Route>
+            <Route path={"/Trailer/:ytTrailerId"} element={<Trailer />}></Route>
+            <Route path="/Reviews/:movieId" element ={<Reviews getMovieData = {getMovieData} movie={movie} reviews ={reviews} setReviews = {setReviews} />}></Route>
+            <Route path="*" element = {<NotFound/>}></Route>
+          </Route>
+        </Routes>
+      </div>
   );
 }
 

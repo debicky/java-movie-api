@@ -53,7 +53,7 @@ const Reviews = ({ getMovieData, movie, reviews, setReviews }) => {
                         <Row>
                             <Col>
                                 <ReviewForm handleSubmit={addReview} revText={revText} labelText="Write a Review?" />
-                                {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+                                {errorMessage && <div className="mt-3 mb-0 alert alert-danger">{errorMessage}</div>}
                             </Col>
                         </Row>
                         <Row>
